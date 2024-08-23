@@ -40,6 +40,12 @@ def signup():
   
 @app.route("/home", methods=["POST","GET"])
 def home():
+  if request.method =="POST":
+    quote = request.form['quote']
+    session['quote']=quote
+    return render_template('/thanks.html')
+  else:
+    return render_template("home.html")
   return render_template("home.html")
 
 
@@ -66,10 +72,19 @@ def thanks():
 
 @app.route("/display", methods=["POST","GET"])
 def display():
-  return render_template("display.html")
+  if request.method == 'POST':
+    new_quote = request.form.get('quote')
+    if 'quotes' not in session:
+      session['quotes'] = []
+      session['quotes'].append(new_quote)
+  quotes = session.get('quotes', [])
+  return render_template('display.html', quotes=quotes)
 
-
-
+@app.route("/signout", methods=["POST","GET"])
+def signout():
+  session['user'] = None
+  auth.current_user = None
+  return redirect(url_for('signin'))
 
 if __name__ == '__main__':
     app.run(debug = True)
