@@ -4,12 +4,14 @@
 <title>a web app that tells you your fortune</title>
 </head>
     <body>
+        <h1>Hello {{session['name']}}</h1>
         <h1>FORTUNE IS FREE FOR A LIMITED TIME</h1>
-        <form action="/home" method="POST">
+        <a href="/fortune">get your fortune now</a>
+       <!--  <form action="/home" method="POST">
 
         <input type="text" name="birthday" placeholder="birth month">
         <input type="submit" value="Submit">
-    </form>
+    </form> -->
         <h2>its not guessing its the truth</h2>
     <body>
 </html>
