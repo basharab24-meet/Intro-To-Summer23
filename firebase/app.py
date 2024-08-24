@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask import session
 import pyrebase
-
+from flask_cors import CORS
 
 
 
@@ -12,14 +12,16 @@ firebaseConfig = {
   'storageBucket': "authentication-lab-60fb0.appspot.com",
   'messagingSenderId': "469954462227",
   'appId': "1:469954462227:web:2d483b5cfae6436f79f5e6",
-  'databaseURL':""
+  'databaseURL':"https://authentication-lab-60fb0-default-rtdb.europe-west1.firebasedatabase.app"
 }
 
 firebase = pyrebase.initialize_app(firebaseConfig)
 auth = firebase.auth()
+db = firebase.database()
 
 app = Flask(__name__, template_folder="templates", static_folder="static")
-app.config["SECRET_KEY"]="MY_KEY"
+app.config["SECRET_KEY"]=" MY_KEY "
+CORS(app)
 
 @app.route("/", methods=["POST","GET"])
 def signup():
@@ -40,10 +42,18 @@ def signup():
   
 @app.route("/home", methods=["POST","GET"])
 def home():
+  print('in home')
   if request.method =="POST":
+    print('in if')
     quote = request.form['quote']
-    session['quote']=quote
-    return render_template('/thanks.html')
+    print(quote)
+    # if 'quotes' not in session:
+    session['quotes'] = [" "]
+    session['quotes'].append(quote)
+    # else:
+    #   session['quotes'].append(quote)
+    # print(session)
+    return render_template('thanks.html')
   else:
     return render_template("home.html")
   return render_template("home.html")
@@ -72,17 +82,17 @@ def thanks():
 
 @app.route("/display", methods=["POST","GET"])
 def display():
-  if request.method == 'POST':
-    new_quote = request.form.get('quote')
-    if 'quotes' not in session:
-      session['quotes'] = []
-      session['quotes'].append(new_quote)
-  quotes = session.get('quotes', [])
+  print('in display:', session)
+  quotes = session['quotes']
+
+  print(quotes)
   return render_template('display.html', quotes=quotes)
 
 @app.route("/signout", methods=["POST","GET"])
 def signout():
   session['user'] = None
+  session['quotes']= ['']
+  # session.pop()
   auth.current_user = None
   return redirect(url_for('signin'))
 
