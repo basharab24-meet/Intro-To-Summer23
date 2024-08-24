@@ -29,10 +29,16 @@ def signup():
   if request.method == 'POST':
     email = request.form['email']
     password = request.form['password']
+    fullname = request.form['fullname']
+    username = request.form['username']
+    user = {"fullname" : fullname,"username" : username, "email" : email}
     session['email']=email
     session['password']=password
     try:
       session['user'] = auth.create_user_with_email_and_password(email, password)
+      UID = session['user']['localId']
+      db.child("Users").child(UID).set(user)
+
       return redirect(url_for("home"))
     except Exception as e:
       return render_template("signup.html")
@@ -47,9 +53,13 @@ def home():
     print('in if')
     quote = request.form['quote']
     print(quote)
+    who = request.form['who']
+    quote ={'text': quote, 'who': who}
+    UID = session['user']['localId']
+    db.child("quotes").child(UID).set(quote)
     # if 'quotes' not in session:
-    session['quotes'] = [" "]
-    session['quotes'].append(quote)
+    # session['quotes'] = [" "]
+    # session['quotes'].append(quote)
     # else:
     #   session['quotes'].append(quote)
     # print(session)
